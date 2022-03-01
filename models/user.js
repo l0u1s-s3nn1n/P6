@@ -1,13 +1,19 @@
-/**IMPORT */
+/// "models/User.js" config pour la base de données mongoose
+
+//package "mongoose"
 const mongoose = require("mongoose");
+
+//package "mongoose-unique-validator" pour bloquer les connections avec la même adresse email
 const uniqueValidator = require("mongoose-unique-validator");
 
-/**SSCHEMA USER */
+//schéma de donné "userSchema"
 const userSchema = mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
 });
-//plugin mongoose validator
+
+//plugin "uniqueValidator"
 userSchema.plugin(uniqueValidator);
-//export to mongoose/express
+
+//exportation "user"
 module.exports = mongoose.model("User", userSchema);

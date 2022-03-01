@@ -1,102 +1,27 @@
-/**IMPORT */
-const express = require('express');
-const sauce = require('../models/sauce');
+/// "routes/sauce.js" : routes pour "sauce"
+
+//package "express"
+const express = require("express");
+
+//"router" pour les routes "sauce"
 const router = express.Router();
 
-const Sauce = require('../models/sauce');
+// "auth.js" pour la vérification des tokens
+const auth = require("../middlewares/auth");
 
-router.post('/', (req, res, next) => {
-  const sauce = new Sauce({
-    title: req.body.title,
-    description: req.body.description,
-    imageUrl: req.body.imageUrl,
-    price: req.body.price,
-    userId: req.body.userId
-  });
-  sauce.save().then(
-    () => {
-      res.status(201).json({
-        message: 'Post saved successfully!'
-      });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
-});
+//"multer-config" pour les "images"
+const multer = require("../middlewares/multer-config");
 
-router.get('/:id', (req, res, next) => {
-  Sauce.findOne({
-    _id: req.params.id
-  }).then(
-    (sauce) => {
-      res.status(200).json(sauce);
-    }
-  ).catch(
-    (error) => {
-      res.status(404).json({
-        error: error
-      });
-    }
-  );
-});
+//controllers/sauce
+const saucesCtrl = require("../controllers/sauce");
 
-router.put('/:id', (req, res, next) => {
-  const sauce = new Sauce({
-    _id: req.params.id,
-    title: req.body.title,
-    description: req.body.description,
-    imageUrl: req.body.imageUrl,
-    price: req.body.price,
-    userId: req.body.userId
-  });
-  Sauce.updateOne({_id: req.params.id}, sauce).then(
-    () => {
-      res.status(201).json({
-        message: 'Thing updated successfully!'
-      });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
-});
+//routes pour "sauce"
+router.get("/", auth, saucesCtrl.getAllSauces);
+router.get("/:id", auth, saucesCtrl.getOneSauce);
+router.post("/", auth, multer, saucesCtrl.createSauce);
+router.put("/:id", auth, multer, saucesCtrl.modifySauce);
+router.delete("/:id", auth, saucesCtrl.deleteSauce);
+router.post("/:id/like", saucesCtrl.modifyLikeSauce);
 
-router.delete('/:id', (req, res, next) => {
-  Sauce.deleteOne({_id: req.params.id}).then(
-    () => {
-      res.status(200).json({
-        message: 'Deleted!'
-      });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
-});
-
-router.get('/' +
-  '', (req, res, next) => {
-  Sauce.find().then(
-    (sauces) => {
-      res.status(200).json(sauces);
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
-});
-
+//exportation router
 module.exports = router;
